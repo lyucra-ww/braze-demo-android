@@ -16,6 +16,7 @@
 <body>
     <h1>Braze WebView Test</h1>
     <button id="loginButton">Login</button>
+    <div id="welcomeMessage" style="display: none;"></div>
 
     <script>
         (function() {
@@ -34,7 +35,7 @@
             });
 
             // Open the Braze session
-            braze.openSession();
+            // braze.openSession();
 
             // Function to generate a UUID and append '_local'
             function generateUserId() {
@@ -42,6 +43,13 @@
                 var uuid = uuidv4();
                 // Append '_local' to the UUID
                 return uuid + '_local';
+            }
+
+            // Function to display the welcome message
+            function showWelcomeMessage(userId) {
+                var welcomeMessage = document.getElementById('welcomeMessage');
+                welcomeMessage.textContent = "You're logged in with User ID: " + userId;
+                welcomeMessage.style.display = 'block';
             }
 
             // Add event listener to the login button
@@ -55,9 +63,15 @@
                 window.BrazeBridge.setUserId(userId);
 
                 // Log an event to verify
-                //braze.logCustomEvent('UserLoggedIn');
+                // braze.logCustomEvent('UserLoggedIn');
 
-                console.log('User logged in with ID:', userId);
+                console.log('User logged in with userId:', userId);
+
+                // Hide the login button
+                document.getElementById('loginButton').style.display = 'none';
+
+                // Show the welcome message
+                showWelcomeMessage(userId);
             });
         })();
     </script>
