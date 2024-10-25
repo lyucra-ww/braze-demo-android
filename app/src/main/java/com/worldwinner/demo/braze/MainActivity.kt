@@ -1,7 +1,6 @@
 package com.worldwinner.demo.braze
 
 import android.os.Bundle
-import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
 import com.braze.Braze
@@ -28,8 +27,11 @@ class MainActivity : AppCompatActivity() {
         webView = WebView(this)
         webView.settings.javaScriptEnabled = true
 
-        // Add JavaScript interface for communication with the WebView
-        webView.addJavascriptInterface(BrazeBridge(), "BrazeBridge")
+        val javascriptString = BrazeFileUtils.getAssetFileStringContents(applicationContext.getAssets(), "appboy-html-in-app-message-javascript-component.js")
+        webView.loadUrl("javascript:" + javascriptString!!)
+
+        val javascriptInterface = InAppMessageJavascriptInterface(applicationContext, inAppMessage)
+        webView.addJavascriptInterface(javascriptInterface, "brazeInternalBridge")
 
         // Load your web content
         webView.loadUrl("file:///android_asset/index.html")
@@ -38,22 +40,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(webView)
     }
 
-    inner class BrazeBridge {
-
-        // Expose deviceId to JavaScript
-        @JavascriptInterface
-        fun getDeviceId(): String? {
-            return brazeInstance.deviceId
-        }
-
-        // Receive userId from JavaScript and change user in Braze
-        @JavascriptInterface
-        fun setUserId(userId: String) {
-            runOnUiThread {
-                brazeInstance.changeUser(userId)
-            }
-        }
-    }
 }
 
 
